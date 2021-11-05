@@ -7,8 +7,8 @@ This tool is primarily intended to convert modern large megapixel images to
 smaller size BMPs usable in DOS. 
 
 The color reduction algorithm is far from
-optimal or speedy. The bigger the output file size that is requested 
-exponentially increases the processing time. The scaling of an image is fairly
+optimal or speedy. The bigger the output file size that is requested will
+exponentially increase the processing time. The scaling of an image is fairly
 quick only color remapping is slow. If you output anything larger than 128x128, 
 expect to wait. When it is creating a 320x200, expect to wait a lot longer.
 You may even think it has even crashed or hung.
