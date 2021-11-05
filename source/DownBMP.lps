@@ -8,10 +8,20 @@
         <Filename Value="DownBMP.pas"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="187"/>
-        <CursorPos X="36" Y="230"/>
+        <TopLine Value="188"/>
+        <CursorPos X="31" Y="197"/>
         <FoldState Value=" T3lX0C11461T"/>
         <UsageCount Value="96"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="winbmp3x.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="WinBMP3x"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="45"/>
+        <CursorPos X="14" Y="97"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -46,16 +56,6 @@
         <Filename Value="DangerPAL.pas"/>
         <EditorIndex Value="2"/>
         <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="winbmp3x.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="WinBMP3x"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="45"/>
-        <CursorPos X="14" Y="97"/>
-        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
