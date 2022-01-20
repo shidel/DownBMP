@@ -51,7 +51,20 @@ var
     X, Y, LW : integer;
     F : File;
     D : TBytes;
+    DD : Byte;
+    CC : integer;
 begin
+     CC := -1;
+    for x := 0 to ColorCount - 1 do
+       if Colors[x].Red + Colors[x].Green + Colors[x].Blue = 0 then begin
+             if X = 0 then Break;
+             CC := X;
+             Colors[x] := Colors[0];
+             Colors[0].Red := 0;
+             Colors[0].Green := 0;
+             Colors[0].Blue := 0;
+             Break;
+       end;
     Result := '';
     FON := Filename;
     FileName := ChangeFileExt(FON,'.bmp');
@@ -89,10 +102,23 @@ begin
     Rewrite(F, 1);
     BlockWrite(F, FH, Sizeof(FH));
     BlockWrite(F, BH, Sizeof(BH));
-    for X := 0 to ColorCount - 1 do
+    for X := 0 to ColorCount - 1 do begin
         BlockWrite(F, Colors[X], Sizeof(TWinBMPColor));
-    for X := 0 to Length(D) - 1 do
-      BlockWrite(F, D[X], Sizeof(Byte));
+        { if X < 10 then WriteLn(X, ': ', Colors[X].Red, ', ', Colors[X].Green, ', ', Colors[X].Blue); }
+    end;
+    if CC > 0 then begin
+      for X := 0 to Length(D) - 1 do begin
+        DD := D[X];
+        if DD = CC then
+           DD := 0
+        else if DD = 0 then
+           DD := CC;
+        BlockWrite(F, DD, Sizeof(Byte));
+      end;
+    end else begin
+        for X := 0 to Length(D) - 1 do
+          BlockWrite(F, D[X], Sizeof(Byte));
+    end;
     Close(F);
 
     Result := Filename;

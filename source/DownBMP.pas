@@ -82,6 +82,7 @@ type
       CfgFile  : TIniFile;
       Verbose  : integer;
       PreserveAspect,
+      LowMatch : boolean;
       BestMatch : boolean;
       MaxWidth : integer;
       MaxHeight : integer;
@@ -96,7 +97,7 @@ type
     procedure SettingsSave; virtual;
     procedure ProcessMain; virtual;
     procedure ReduceColors(var Colors : TAvgLvlTree);
-    procedure AddDangerPAL(var Colors : TAvgLvlTree; Offset : Int64);
+    procedure AddDangerPAL(var Colors : TAvgLvlTree; Offset : Int64; LowOnly : boolean);
     procedure IndexColors(var Colors : TAvgLvlTree; var CP : TWinBMPPalette);
   end;
 
@@ -136,7 +137,7 @@ var
   S : String;
 begin
   // quick check parameters
-  ErrorMsg:=CheckOptions('hsamc', ['help', 'size', 'aspect', 'match', 'colors']);
+  ErrorMsg:=CheckOptions('hsamcl', ['help', 'size', 'aspect', 'match', 'colors', 'lower']);
   if ErrorMsg<>'' then begin
     ShowException(Exception.Create(ErrorMsg));
     Terminate;
@@ -157,6 +158,10 @@ begin
   if HasOption('m', 'match') then begin
      BestMatch := True;
   end;
+
+  if HasOption('l', 'lower') then begin
+      LowMatch := True;
+   end;
 
   if HasOption('s', 'size') then begin
     MaxWidth:=64;
@@ -213,6 +218,7 @@ begin
   MaxColors := 256;
   PreserveAspect := False;
   BestMatch := False;
+  LowMatch := False;
   SettingsDefault;
   SettingsLoad;
 end;
@@ -236,6 +242,7 @@ begin
   WriteLn(#9,'-c, --colors n',    #9#9, 'Reduce to less then 256 colors (-m highly recommended)');
   WriteLn(#9,'-s, --size x:y',    #9#9, 'Resize image (hint: leave out value for autosize)');
   WriteLn(#9,'-m, --match',       #9#9, 'Match Danger Engine Color default profile');
+  WriteLn(#9,'-l, --lower',       #9#9, 'Match Danger Engine Color lower 15 colors');
   WriteLn;
 
   WriteLn(#9,'-v, --verbose', #9#9, 'Display more information');
@@ -379,7 +386,11 @@ begin
        { if best match add Danger Engine Pallete as most needed }
        ReduceColors(Colors);
        if BestMatch then begin
-          AddDangerPAL(Colors, MaxWidth * MaxHeight);
+          AddDangerPAL(Colors, MaxWidth * MaxHeight, False);
+          ReduceColors(Colors);
+       end;
+       if LowMatch then begin
+          AddDangerPAL(Colors, MaxWidth * MaxHeight, True);
           ReduceColors(Colors);
        end;
        { get new color counts }
@@ -498,12 +509,13 @@ begin
   Colors.OnCompare := @CompareColorValues;
 end;
 
-procedure TDownShiftBMP.AddDangerPAL(var Colors: TAvgLvlTree; Offset: Int64);
+procedure TDownShiftBMP.AddDangerPAL(var Colors: TAvgLvlTree; Offset: Int64; LowOnly : boolean);
 var
-  I : integer;
+  I, X : integer;
   C : TFPColor;
 begin
-   for I := 0 to 255 do begin
+   if LowOnly then X := 15 else X := 255;
+   for I := 0 to X do begin
      C.Red := DANGER_RGB[I].Red;
      C.Green := DANGER_RGB[I].Green;
      C.Blue := DANGER_RGB[I].Blue;
@@ -520,11 +532,13 @@ begin
   I := 0;
   for Node in Colors do begin
     TColorData(Node.Data).Idx:= I;
+    { WriteLn(I, ':', TColorData(Node.Data).Count, ' ',
+       CP[I].Red, ', ', CP[I].Green, ', ', CP[I].Blue); }
     CP[I].Red := TColorData(Node.Data).Color.Red;
     CP[I].Green := TColorData(Node.Data).Color.Green;
     CP[I].Blue := TColorData(Node.Data).Color.Blue;
     Inc(I);
-  end;
+   end;
   Colors.OnCompare := @CompareColorValues;
 end;
 
